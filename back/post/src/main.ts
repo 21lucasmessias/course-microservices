@@ -14,16 +14,7 @@ app.use(
 
 type Post = { id: string; title: string }
 
-const posts: { [key: string]: Post } = {
-    "1": {
-        id: "1",
-        title: "Title 1",
-    },
-    "2": {
-        id: "2",
-        title: "Title 2",
-    },
-}
+const posts: { [key: string]: Post } = {}
 
 app.post("/api/posts", async (req, res) => {
     const post = req.body as { title: string }

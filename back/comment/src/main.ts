@@ -12,52 +12,25 @@ app.use(
     })
 )
 
-type Comment = { id: string; comment: string }
+type Comment = { id: string; comment: string; status: "pending" | "declined" | "allowed" }
 
-const comments: { [key: string]: { id: string; comments: Comment[] } } = {
-    "1": {
-        id: "1",
-        comments: [
-            {
-                id: "1",
-                comment: "Teste comentário 1",
-            },
-            {
-                id: "2",
-                comment: "Teste comentário 2",
-            },
-        ],
-    },
-    "2": {
-        id: "2",
-        comments: [
-            {
-                id: "3",
-                comment: "Teste comentário 3",
-            },
-            {
-                id: "4",
-                comment: "Teste comentário 4",
-            },
-        ],
-    },
-}
+const postsWithComments: { [key: string]: { id: string; comments: Comment[] } } = {}
 
 app.post("/api/posts/:id/comment", async (req, res) => {
     const id = randomUUID()
     const comment = req.body as Comment
     comment.id = id
+    comment.status = "pending"
 
-    const commentsUpsert = comments[req.params.id].comments || []
+    const commentsUpsert = postsWithComments[req.params.id].comments || []
     commentsUpsert.push(comment)
 
-    comments[req.params.id].comments = commentsUpsert
+    postsWithComments[req.params.id].comments = commentsUpsert
 
     await axios.post("http://localhost:3005/events", {
         type: "CreateComment",
         data: {
-            id,
-            comment: comment.comment,
+            ...comment,
             postId: req.params.id,
         },
     })
@@ -65,16 +38,29 @@ app.post("/api/posts/:id/comment", async (req, res) => {
     res.status(201).send(commentsUpsert)
 })
 
-type Post = { id: string; title: string }
-
-app.post("/events", (req, res) => {
-    console.log("Event received", req.body.type)
+app.post("/events", async (req, res) => {
+    console.log("Event received", req.body.type, req.body.data)
+    console.log(JSON.stringify(postsWithComments))
 
     if (req.body.type === "CreatePost") {
-        const post = req.body.data as Post
-        comments[req.body.data.id] = {
+        postsWithComments[req.body.data.id] = {
             id: req.body.data.id,
             comments: [],
+        }
+    } else if (req.body.type === "ModerateComment") {
+        const comment = postsWithComments[req.body.data.postId].comments.find((comment) => comment.id === req.body.data.id)
+        if (comment) {
+            comment.status = req.body.data.status
+
+            await axios.post("http://localhost:3005/events", {
+                type: "UpdateComment",
+                data: {
+                    ...comment,
+                    postId: req.body.data.postId,
+                },
+            })
+        } else {
+            console.log("comment not found")
         }
     }
 

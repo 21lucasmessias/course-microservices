@@ -21,6 +21,9 @@ export function ListOfPostsWithComments() {
                                 {data.comments.map((comment) => (
                                     <Box key={comment.id}>
                                         <Typography>{comment.comment}</Typography>
+                                        <Typography color={comment.status === 'allowed' ? 'green' : comment.status === 'declined' ? 'red' : 'orange'}>
+                                            {comment.status}
+                                        </Typography>
                                     </Box>
                                 ))}
                             </Box>

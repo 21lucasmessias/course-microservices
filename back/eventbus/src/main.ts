@@ -15,6 +15,7 @@ app.post("/events", async (req, res) => {
     await axios.post("http://localhost:3000/events", req.body)
     await axios.post("http://localhost:3001/events", req.body)
     await axios.post("http://localhost:3002/events", req.body)
+    await axios.post("http://localhost:3003/events", req.body)
     res.send({})
 })
 
