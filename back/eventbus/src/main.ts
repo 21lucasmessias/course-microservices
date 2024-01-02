@@ -16,11 +16,26 @@ const events: Event[] = []
 
 app.post("/events", async (req: TypedRequestBody<Event>, res) => {
     events.push(req.body)
-
-    await axios.post("http://localhost:3000/events", req.body)
-    await axios.post("http://localhost:3001/events", req.body)
-    await axios.post("http://localhost:3002/events", req.body)
-    await axios.post("http://localhost:3003/events", req.body)
+    try {
+        await axios.post("http://localhost:3000/events", req.body)
+    } catch (err) {
+        console.log(err)
+    }
+    try {
+        await axios.post("http://localhost:3001/events", req.body)
+    } catch (err) {
+        console.log(err)
+    }
+    try {
+        await axios.post("http://localhost:3002/events", req.body)
+    } catch (err) {
+        console.log(err)
+    }
+    try {
+        await axios.post("http://localhost:3003/events", req.body)
+    } catch (err) {
+        console.log(err)
+    }
 
     res.send({})
 })
