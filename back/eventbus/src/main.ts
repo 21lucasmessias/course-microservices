@@ -1,7 +1,8 @@
-import express from "express"
+import express, { Request } from "express"
 import cors from "cors"
 import bodyParser from "body-parser"
 import axios from "axios"
+import { Event, TypedRequestBody } from "./types"
 
 const app = express()
 app.use(bodyParser.json())
@@ -11,12 +12,21 @@ app.use(
     })
 )
 
-app.post("/events", async (req, res) => {
+const events: Event[] = []
+
+app.post("/events", async (req: TypedRequestBody<Event>, res) => {
+    events.push(req.body)
+
     await axios.post("http://localhost:3000/events", req.body)
     await axios.post("http://localhost:3001/events", req.body)
     await axios.post("http://localhost:3002/events", req.body)
     await axios.post("http://localhost:3003/events", req.body)
+
     res.send({})
+})
+
+app.get("/events", (req, res) => {
+    res.send(events)
 })
 
 app.listen(3005, () => {
