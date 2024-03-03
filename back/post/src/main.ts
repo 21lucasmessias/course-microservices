@@ -3,6 +3,9 @@ import cors from "cors"
 import bodyParser from "body-parser"
 import { randomUUID } from "crypto"
 import axios from "axios"
+import dotenv from "dotenv"
+
+dotenv.config()
 
 const app = express()
 app.use(bodyParser.json())
@@ -26,7 +29,7 @@ app.post("/api/posts", async (req, res) => {
         title: post.title,
     }
 
-    await axios.post("http://localhost:3005/events", { type: "CreatePost", data: posts[id] })
+    await axios.post(`http://localhost:${process.env.EVENT_BUS_PORT}/events`, { type: "CreatePost", data: posts[id] })
 
     res.status(201).send(posts[id])
 })
@@ -37,6 +40,6 @@ app.post("/events", (req, res) => {
     res.send({})
 })
 
-app.listen(3000, () => {
-    console.log("Listening on 3000")
+app.listen(process.env.PORT, () => {
+    console.log(`Listening on ${process.env.PORT}`)
 })

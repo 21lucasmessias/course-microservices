@@ -16,7 +16,12 @@ spec:
         spec:
             containers:
                 - name: post
-                  image: 21lucasmessias/udemy-micro:post_0.1
+                  image: 21lucasmessias/udemy-micro:post_0.3
+                  env:
+                      - name: 'PORT'
+                        value: '3000'
+                      - name: 'EVENT_BUS_PORT'
+                        value: '3005'
                   resources:
                       limits:
                           cpu: '0.5'
