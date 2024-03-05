@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: post-env
+data:
+    PORT: '3000'
+    EVENT_BUS_PORT: '3005'
